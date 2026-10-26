@@ -7,27 +7,35 @@ on:
     types: [published]
   workflow_dispatch:
 
+# Grants the default token permission to push the built docs to the gh-pages branch
+permissions:
+  contents: write
+
 jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+        
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-      - name: Install dependencies
+          
+      - name: Upgrade pip
         run: python -m pip install --upgrade pip
+        
       - name: Install dependencies
-        run: pip install -r requirements_dev.txt
-      - name: Install dependencies
-        run: pip install -e .
-      - name: Run workflow command
+        run: |
+          pip install -r requirements_dev.txt
+          pip install -e .
+          
+      - name: Build docs
         run: cd docs && make html
-      - name: Actions Publish Gh Pages
-        uses: tsunematsu21/actions-publish-gh-pages@v1.0.1
+        
+      - name: Publish to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          dir: docs/build/html
-          branch: gh-pages
-          token: ${{ secrets.ACCESS_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/build/html
