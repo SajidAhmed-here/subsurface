@@ -15,6 +15,7 @@ jobs:
     env:
       PYVISTA_OFF_SCREEN: "true"
       ALLOW_PLOTTING: "true"
+      PYTHONPATH: tests
 
     steps:
       - name: Check out repository
@@ -45,7 +46,7 @@ jobs:
       - name: Run tests
         # These tests need local/private datasets configured through .env.
         run: >-
-          xvfb-run -a python -m pytest
+          xvfb-run -a python -m pytest tests
           --cov=subsurface
           --cov-report=term-missing
           --ignore=tests/test_io/test_lines/test_lines_I.py
